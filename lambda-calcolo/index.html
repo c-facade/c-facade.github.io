@@ -1,0 +1,191 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Lambda Calculus Visualizer</title>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="lambda.js"></script>
+  <script src="submit.js"></script>
+  <link rel="stylesheet" type="text/css" href="lambda.css">
+</head>
+
+<body>
+    <h1>Lambda Calculus interactive visualizer</h1>
+    <div id="explanation">
+        <div>
+            <b>Functional programming</b> asks (among other things): What if functions could also be used as values?
+            <br/>
+            <b>Lambda Calculs</b> asks: What if functions were <em>the only kind of value</em> you could have? What if <em>everything</em> was functions?
+        </div>
+
+        <div>
+            For example, let's say we want to represent boolean logic using lambda calculus. Operators like AND, OR, NOT would of course be functions. 
+            <br/>
+            But so would the values TRUE and FALSE! They are functions defined in a very clever way, such that any valid boolean expression actually does evaluate to the correct TRUE or FALSE value/function/thing. 
+        </div>
+
+        <div>
+            TRUE is defined as <code><b>(&lambda;x. &lambda;y. x)</b></code>.  This means that it takes one argument (x), then takes another argument(y), and returns the first argument.
+            <br/>
+            FALSE is the opposite: it returns the second argument.
+        </div>
+
+        <div>
+            Lambda calculus is actually quite simple to evaluate. There are really only two things you can do:
+            <ol>
+                <li>
+                    <b>Replace</b> a symbol with its definition. For example:
+                    <br/>
+                    <code><b>TRUE</b> THING_A THING_B</code> &#10230 <br/>
+                    <code><b>(&lambda;x. &lambda;y. x)</b> THING_A THING_B</code>
+                </li>
+                <li>
+                    <b>Apply</b> a value to a lambda argument. You take the firsst thing <b>after</b> of a lambda expression, and then use it to replace the first lambda variable <b>inside</b> of that expression. 
+                    For example:
+                    <br>
+                    <code>(<b>&lambda;x.</b> &lambda;y. x) <b>THING_A</b> THING_B</code> &#10230 <br/>
+                    <code>(&lambda;y. <b>THING_A</b>)  THING_B </code>
+                    <br>
+                    Yes, the function goes inside the parentheses,but the values for arguments go outside of them! It's a bit unusual, but it makes a lot of sense once you get used to it.
+                </li>
+            </ol>
+            If you keep doing that in the right order to a well-formed expression, you should eventually arrive at the correct answer.
+            <br/>
+            "Wait, what do you mean by the <em>right</em> order?!" - you might be asking.
+            <br/>
+            Well, if you get unlucky with your choice of order, it's possible to run into infinite expansion loops and never get anywhere useful. 
+            <br/>
+            For this reason, a common convention is to always replace or apply the <b>left-most</b> thing you can do that operation to. And this <em>usually</em> works out fine.
+        </div>
+        <h2>Try it out!</h2>
+        <div>
+            Enough words! Below are links to some interactive examples of using lambda calculus for simple boolean logic.
+            In these visualizations, the <b>Replace</b> step is done automatically for you. 
+            You will have to trigger each <b>Apply</b> step by clicking on the <em>value</em> which should be applied to a lambda variable.
+        </div>
+
+        <!--div>
+            In these examples, all the symbols are renamed slightly to emphasize what they do as functions. For example, TRUE and FALSE are renamed into TRUE and FALSE.
+        </div-->
+
+        <h3>Not</h3>
+        <table class="expr_table">
+            <tr>
+                <th></th>
+                <th>
+                    NOT
+                </th>
+            </tr>
+            <tr>
+                <th>TRUE</th>
+                <td><a href='expand.html?expr=NOT%20TRUE' target='_'>NOT TRUE</a></td>
+            </tr>
+            <tr>
+                <th>FALSE</th>
+                <td><a href='expand.html?expr=NOT%20FALSE' target='_'>NOT FALSE</a></td>
+            </tr>
+        </table>
+
+        <h3>And</h3>
+        <table class="expr_table">
+            <tr>
+                <th></th>
+                <th>
+                    TRUE
+                </th>
+                <th>
+                    FALSE
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    TRUE
+                </th>
+                <td>
+                    <a href='expand.html?expr=AND%20TRUE%20TRUE' target='_'>AND TRUE TRUE</a>
+                </td>
+                <td>
+                    <a href='expand.html?expr=AND%20FALSE%20TRUE' target='_'>AND FALSE TRUE</a>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    FALSE
+                </th>
+                <td>
+                    <a href='expand.html?expr=AND%20TRUE%20FALSE' target='_'>AND TRUE FALSE</a>
+                </td>
+                <td>
+                    <a href='expand.html?expr=AND%20FALSE%20FALSE' target='_'>AND FALSE FALSE</a>
+                </td>
+            </tr>
+        </table>
+
+
+        <h3>Or</h3>
+                <table class="expr_table">
+            <tr>
+                <th></th>
+                <th>
+                    TRUE
+                </th>
+                <th>
+                    FALSE
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    TRUE
+                </th>
+                <td>
+                    <a href='expand.html?expr=OR%20TRUE%20TRUE' target='_'>OR TRUE TRUE</a>
+                </td>
+                <td>
+                    <a href='expand.html?expr=OR%20FALSE%20TRUE' target='_'>OR FALSE TRUE</a>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    FALSE
+                </th>
+                <td>
+                    <a href='expand.html?expr=OR%20TRUE%20FALSE' target='_'>OR TRUE FALSE</a>
+                </td>
+                <td>
+                    <a href='expand.html?expr=OR%20FALSE%20FALSE' target='_'>OR FALSE FALSE</a>
+                </td>
+            </tr>
+        </table>
+        
+        <h3>Recursion</h3>
+        <table class= "expr_table">
+        	<tr>
+        		<td>
+        			<a href='expand.html?expr=Y%20NOT' target='_'>Y NOT</a>
+        		</td>
+        		<td>
+        			<a href='expand.html?expr=OMEGA' target='_'>OMEGA</a>
+        	</tr>
+        </table>
+     </div>   
+     <br>
+     <div class = "box">
+        <div>
+        	<h3>WRITE A NEW EXPRESSION</h3>
+        	<p>
+        		<label for="expression">Expression:</label>
+        		<input type="text" id="textbar" placeholder="AND TRUE OR FALSE FALSE">
+        	</p>
+        	<button type="submit" onclick="show_expression()">Show</button>
+        </div>
+        
+        <p>
+        	<div class = "box-dot" id = "show">
+        	</div>
+        </p>
+        <p id = "alert"><p>
+        <p id = "link"><p>
+    </div>
+</body>
+</html>

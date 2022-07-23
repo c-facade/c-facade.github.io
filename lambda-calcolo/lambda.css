@@ -1,0 +1,86 @@
+.token {
+    margin: 5px;
+    border-style: dotted;
+    border-width: thin;
+    padding: 5px;
+    border-color: gray;
+    height: fit-content;
+    align-self: center;
+}
+
+.list {
+    padding: 2px;
+    border-style: dashed;
+    border-width: thin;
+    display: inline-flex;
+    border-color: cadetblue;
+    margin-left: 5px;
+}
+
+.list .list:before {
+    content:'(';
+    align-self: center;
+}
+
+.list .list:after {
+    content:')';
+    align-self: center;
+}
+
+.highlight {
+    background: #eeeeee;
+  }
+
+.greentext {
+	color: green;
+}
+
+.redtext {
+	color: red;
+}
+
+.box {
+	padding: 20px;
+	border-style: solid;
+	border-width: thin;
+	margin: auto;
+	width: 70%;
+}
+
+.box-dot {
+	padding: 10px;
+	border-style: dotted;
+	border-width: thin;
+	margin: auto;
+	margin-top: 10px;
+	width: 70%;
+}
+
+
+/*The rest is page styling, not lambda calculus styling.
+TODO: move to some other style file?*/
+#side_by_side {
+    display: flex;
+    flex-direction: row;
+    width:95%;
+}
+
+#expression_box {
+    display: inline-block;
+    flex-grow: 1;
+    margin:10px;
+}
+
+#symbol_box {
+    display: inline-block;
+    flex-shrink: 0
+}
+
+#explanation div{
+    margin-bottom: 20px;
+}
+
+table.expr_table td {
+    border:1px black solid;
+    padding:10px
+}
