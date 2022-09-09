@@ -1,6 +1,13 @@
 
 
 function createNotes(options = null){
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	let stile = urlParams.get('stile');
+	if(stile == "modern"){
+		stylelink = document.getElementById("stylesh");
+		stylelink.href = "style1.css";
+	}
 	let title = localStorage.getItem("title");
 	let body = localStorage.getItem("body");
 	let titlenode = document.createTextNode(title);
@@ -44,7 +51,7 @@ function printbody(barr) {
 		let risposta = barr[i+1];
 		
 		//checking for empty strings
-		if (domanda == "" || risposta == "") continue;
+		if (domanda == undefined || risposta == undefined) continue;
 		//checking for cloze
 		if (domanda.indexOf('{{c') != -1){
 			domanda = cleanCloze(domanda);
@@ -79,9 +86,12 @@ function cleanCloze(stringa){
 		let middle = stringa.indexOf(':')+2;
 		let end = stringa.indexOf('}')+1;
 		let interno = stringa.slice(middle, (end-1));
-		interno = '<em><strong>' + interno + '</strong></em>';
-		stringa = stringa.replace(/{{.+}}/i, interno);
+		interno = '<em>' + interno + '</em>';
+		stringa = stringa.replace(/{{.+?}}/, interno);
 		console.log(stringa);
+		if (stringa.indexOf('{{c') != -1){
+			stringa = cleanCloze(stringa);
+		}
 		return stringa;
 }
 
@@ -98,16 +108,26 @@ function insertPTitle(body, PTitle){
 
 //TODO: versione che utilizza Latex, per un pdf molto più leggero.
 function writeLatex(title, bodyarray){
-	var testolatex = "\\documentclass{article} " +
-	" \\title{" + title + "} " + "\\author{Anki To Notes}"+ "\\date{\\today} " +
-	"\\begin{document} " + "\\maketitle ";
+	var testolatex = "\\documentclass{article}\n " +
+	" \\title{" + title + "}\n" + "\\author{Anki To Notes}\n"+ "\\date{\\today}\n" + "\\usepackage{multicol}\n" +
+"\\usepackage[margin=1in]{geometry}\n" +
+"\\setlength\\columnsep{20pt}\n" +
+	"\\begin{document}\n" + "\\maketitle\n" + "\\begin{multicols}{2}\n";
 	
 	//ripuliamo da simboli html vari.
 	
 	for(let i = 0; i < bodyarray.length; i++){
 		str = bodyarray[i];
+		if (str.indexOf('{{c') != -1){
+			str = cleanCloze(str);
+		}
+		if (str[0] == "\"" && str[str.length-1] == "\""){
+			str = str.slice(1, (str.length-1));
+		}
 		str = str.replace(/<b>/g,"\\textbf{");
 		str = str.replace(/<\/b>/g, "}");
+		str = str.replace(/<strong>/g,"\\textbf{");
+		str = str.replace(/<\/strong>/g, "}");
 		str = str.replace(/<i>/g, "\\emph{");
 		str = str.replace(/<\/i>/g, "}");
 		str = str.replace(/<em>/g, "\\emph{");
@@ -116,6 +136,14 @@ function writeLatex(title, bodyarray){
 		str = str.replace(/<br>/g, " \\par ");
 		str = str.replace(/&gt;/g, "$>$");
 		str = str.replace(/&lt;/g, "$<$");
+		str = str.replace(/<ul>/g, "\\begin{itemize} ");
+		str = str.replace(/<\/ul>/g, "\\end{itemize} ");
+		str = str.replace(/<li>/g, "\\item ");
+		str = str.replace(/<\/li>/g, "");
+		str = str.replace(/<ol>/g, "\\begin{enumerate} ");
+		str = str.replace(/<\/ol>/g, "\\end{enumerate} ");
+		str = str.replace(/<li>/g, "\\item ");
+		str = str.replace(/<\/li>/g, "");
 		bodyarray[i] = str;
 	}
 	
@@ -129,16 +157,12 @@ function writeLatex(title, bodyarray){
 		let domanda = bodyarray[i];
 		let risposta = bodyarray[i+1];
 		
-		if(domanda == "" || risposta == "") continue;
+		if(domanda == undefined || risposta == undefined) continue;
 		
-		if (domanda.indexOf('{{c') != -1){
-			domanda = cleanCloze(domanda);
-		}
-		
-		testolatex += "\\paragraph{" + domanda +"}"+ risposta+" ";
+		testolatex += "\\paragraph{} \\begin{large}" + domanda +"\\end{large} \\hfill "+ risposta+"\n";
 	}
 	
-	testolatex += "\\end{document}";
+	testolatex += "\\end{multicols}\n \\end{document}\n";
 	
 	return testolatex;
 	
@@ -148,7 +172,7 @@ function sezionelatex(testo){
 	let start = testo.indexOf("[") + 2;
 	let end = testo.indexOf("]");
 	let interno = testo.slice(start, end);
-	return "\\section{" + interno + "} ";
+	return "\\section{" + interno + "}\n";
 }
 
 function makeLatexLink(title, testolatex){
@@ -161,26 +185,10 @@ function makeLatexLink(title, testolatex){
 	bloblink.href = URLblob;
 	bloblink.id = "bloblink";
 	bloblink.innerHTML = "Download as Latex File.";
-	buttondiv = document.getElementById("buttondiv");
-	buttondiv.appendChild(bloblink);
+	downloadlf = document.getElementById("dlf");
+	downloadlf.appendChild(bloblink);
 }
 
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
