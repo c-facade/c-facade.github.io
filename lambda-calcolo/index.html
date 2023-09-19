@@ -2,18 +2,25 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
   <title>Lambda Calculus Visualizer</title>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <meta name="description" content="Visualize lambda calculus expressions's evaluation">
+  <!---
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
   <script src="lambda.js"></script>
   <script src="submit.js"></script>
   <link rel="stylesheet" type="text/css" href="lambda.css">
+  <meta charset='UTF-8'/>
+  <meta name='viewport'
+	content='width=device-width, initial-scale=1.0, maximum-scale=1.0' />
 </head>
 
+
 <body>
+    <header>
     <h1>Lambda Calculus interactive visualizer</h1>
-    <hr class = "bigline">
-    <div id="explanation">
+    </header>
+    <!--- <hr class = "bigline"> -->
+    <main>
         <div>
             <b>Functional programming</b> asks (among other things): What if functions could also be used as values?
             <br/>
@@ -177,7 +184,7 @@
         <div>
         	<h3>WRITE A NEW EXPRESSION</h3>
         	<p>
-        		<label for="expression">Expression:</label>
+        		<label for="textbar">Expression:</label>
         		<input type="text" id="textbar" placeholder="AND TRUE OR FALSE FALSE">
         	</p>
         	<button type="submit" onclick="show_expression()">Show</button>
@@ -189,6 +196,10 @@
         </p>
         <p id = "alert"><p>
         <p id = "link"><a></a><p>
-    </div>
+    </main>
+    
+    <footer> 
+    	<div>This website's <a href="https://github.com/c-facade/lambda-js">github repository</a> </div>
+    </footer>
 </body>
 </html>
