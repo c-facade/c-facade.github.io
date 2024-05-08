@@ -185,7 +185,12 @@ function updatePreview(){
 
 // splits text into an array of cards
 function parsebody(bodytext){
-  bodyarray = bodytext.split(/\r|\n/);
+	bodyarray = bodytext.split(/\r|\n/);
+	//fix for more separator types
+	while(bodyarray[0].startsWith('#')){
+		//console.log(bodyarray[0]);
+		bodyarray.shift();
+	}
   let cardsarray = [];
   for (let i = 0; i< bodyarray.length; i=i+1){
     let question = ""; 
@@ -196,12 +201,21 @@ function parsebody(bodytext){
     else{
       card = bodyarray[i].split(/\t|    /);
       question = card[0];
-      answer = card[1];
+			answer = card[1];
+			if(question == undefined){
+				console.log("Question is undefined")
+				break;
+			}
+			if(answer == undefined){
+				console.log("created cardsarray")
+				break;
+			}
     }   
     question = question.replace(/^"/, "");
     question = question.replace(/"$/, "");
     answer = answer.replace(/^"/, "");
-    answer = answer.replace(/"$/, "");
+		answer = answer.replace(/"$/, "");
+		//console.log([question, answer])
     cardsarray.push([question, answer]);
   }
   return cardsarray;
@@ -237,7 +251,12 @@ function isClozeCard(card){
 //we will substitute the internal text
 //with emphasised text
 function cleanCloze(stringa){
-	let start = stringa.indexOf('{');
+	//TODO find a way to exclude latex from cloze and other
+	//transformation
+	
+	stringa = stringa.replaceAll(/{{c\d+::(.+?)}}/g, "$1")
+	
+	/*let start = stringa.indexOf('{');
 	let middle = stringa.indexOf(':')+2;
 	let end = stringa.indexOf('}')+1;
 	//interno is the internal text of
@@ -248,8 +267,10 @@ function cleanCloze(stringa){
 	//if there is more the one cloze
 	//we call the function again
 	if (stringa.indexOf('{{c') != -1){
+		console.log(stringa);
 		stringa = cleanCloze(stringa);
 	}
+	*/
 	return stringa;
 }
 
