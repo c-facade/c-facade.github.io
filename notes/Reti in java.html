@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+ <html>                     
+ <head>
+   <title>Reti in java</title>
+   <link rel="stylesheet" href="style.css">
+   <meta charset='UTF-8'/>
+   <meta name='viewport'
+     content='width=device-width, initial-scale=1.0, maximum-scale=1.      0' />
+ </head>
+ <style>
+ 
+ *{
+  font-family: "Helvetica", "Arial", sans-serif;
+  line-height: 1.5em;
+ }
+ 
+h1{
+    color: #EEB34B;
+}
+ 
+ body{
+ 	color: #E5E4E2;
+	background-color: #1A1A1A;
+	display: flex;
+	flex-direction: column;
+	min-height: 900px;
+ 	margin:auto;
+ 	max-width: 1000px;
+ 
+ details{
+	background: #2D2B28;
+	padding: 2px 10px;
+	margin: 10px 0;
+	border-style: transparent;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+details summary{
+	font-weight: bold;
+	/*font-size: 16px;*/
+	}
+ </style>
+ <body>
+<h1>Reti in Java</h1>
+<h2>Network applications</h2>
+<details><summary>Cosa è una network application?</summary>
+<p>E' un insieme di due o più processi su host diversi, che comunicano per ottenere una funzionalità globale.<br></p>
+<p>I processi possono essere strutturati in più thread, oppure utilizzare il multiplexing dei canali.<br></p>
+<p>I processi comunicano attraverso protocolli.</p>
+</details>
+<h2>Threads</h2>
+<details><summary>Cosa è il thread di un processo?</summary>
+<p>E' un flusso di esecuzione leggero che utilizza le stesse risorse, cioè lo stesso spazio degli indirizzi, degli altri thread, e agisce in contemporanea.</p>
+</details>
+<details><summary>Come avviene l'esecuzione dei thread?</summary>
+<p>Nel caso single core, con l'interleaving. Nel caso multicore c'è una simultaneità di esecuzione.</p>
+</details>
+<details><summary>Quali sono vantaggi e svantaggi del multithreading?</summary>
+<p>Permette un utilizzo più efficiente delle risorse e riduce il tempo complessivo di esecuzione. Dall'altro lato, rende il codice più complesso, e causa problemi specifici.</p>
+</details>
+<details><summary>Come funziona la classe thread e l'esecuzione di threads?</summary>
+<p>La classe thread memorizza un riferimento all'oggetto Runnable nella variabile runnable. Quando si chiama la funzione start(), se il metodo run() è stato ridefinito, si esegue la versione più specifica. Altrimenti, si esegue il metodo standard, che invoca il metodo run() del runnable passato come argomento.</p>
+</details>
+<details><summary>Nel chiamare un thread, cosa succede se sostituisco l'invocazione del metodo run alla start?</summary>
+<p>Non viene attivato alcun thread, perchè il metodo run() viene eseguito nel flusso di esecuzione del programma principale. Quindi avviene un flusso di esecuzione sequenziale.</p>
+</details>
+<details><summary>Come funziona il metodo start() nel chiamare un thread?</summary>
+<p>Segnala allo scheduler che il thread è pronto all'esecuzione, e restituisce immediatamente il controllo al thread principale. Senza attendere che il thread inizi la sua esecuzione.<br></p>
+<p>La JVM inizializza l'ambiente del thread.</p>
+</details>
+<details><summary>Perchè qualcuno dovrebbe utilizzare Runnable piuttosto che ridefinire il metodo run di un thread?</summary>
+<p>In Java una classe può estendere una sola altra classe, quindi la classe i cui oggetti devono essere eseguiti come thread non può estendere altre classi.<br></p>
+<p>Invece un runnable può estendere un'altra classe e implementare l'interfaccia Runnable allo stesso tempo.</p>
+</details>
+<details><summary>Come termina un programma Java?</summary>
+<p>Termina quando terminano tutti i suoi threads non demoni. Anche se viene terminato il metodo principale non terminano i threads secondari. Inoltre se un thread invoca sys.exit() l'intero programma viene terminato.</p>
+</details>
+<details><summary>Thread overhead</summary>
+<p>Si parla del tempo e delle risorse utilizzate per gestire i threads.<br></p>
+<p>L'attivazione e l'eliminazione di thread necessita di interazioni tra la JVM e il SO, che non è mai trascurabile, specie per richieste frequenti e lightweight. L'impatto sulle prestazioni varia a seconda del SO.<br></p>
+<p>La JVM alloca uno stack per ogni thread, e questo può causare molto lavoro per il garbage collector.</p>
+</details>
+<h2>Threadpools</h2>
+<details><summary>Perchè usare una threadpool, quando si devono eseguire molte task?</summary>
+<p>Un thread per ogni task può non essere sostenibile, specialmente nel caso di task leggere e molto frequenti.<br></p>
+<p>Un pool di thread permette di riutilizzare gli stessi threads per eseguire più tasks, diminuendo il costo per attivazione e terminazione di threads.</p>
+</details>
+<details><summary>Come funziona il thread pooling?</summary>
+<p>C'è una coda di task che aspettano l'esecuzione, che è gestita con politica FIFO, ed un pool di thread disponibili per l'esecuzione di task.<br></p>
+<p>Se esiste un thread libero per l'esecuzione del primo task della coda, il task gli viene assegnato, e il thread viene tolto dal pool dei thread disponibili.<br></p>
+<p>Se tutti i thread sono occupati, e ci sono task in attesa, è possibile creare un nuovo thread.<br></p>
+<p>In FixedThreadPool, questo non succede, e il numero di threads resta costante.</p>
+</details>
+<details><summary>Cosa è un thread pool?</summary>
+<p>E' una struttura dati la cui dimensione massima può essere prefissata, che contiene riferimenti ad un insieme di threads. I suoi threads possono essere riutilizzati per l'esecuzione di più task.<br></p>
+<p>La sottomissione di un task e la sua esecuzione sono disaccoppiati, e l'esecuzione di un task ritarda se non ci sono risorse disponibili.</p>
+</details>
+<details><summary>Come funziona una FixedThreadPool?</summary>
+<p>Ha un numero di thread che viene fissato al momento della inizializzazione del pool.<br></p>
+<p>Ha una coda di task.<br></p>
+<p>Quando viene sottomesso un task T, se tutti i threads sono occupati, T viene inserito in una coda, gestita automaticamente dall'Executor Service. Altrimenti, viene utilizzato uno dei thread inattivi.<br></p>
+<p>Utilizza una LinkedBlockingQueue, che è una coda illimitata.</p>
+</details>
+<details><summary>Come funziona un CachedThreadPool?</summary>
+<p>E' un ThreadPool che, se ci sono task da eseguire e tutti i thread sono occupati, attiva un nuovo thread, e se un thread è inattivo per 60 secondi, lo elimina.<br></p>
+<p>Questo lo rende elastico, e gli permette di adattarsi alle necessità del problema.</p>
+</details>
+<details><summary>Thread Pool Executor</summary>
+<p>E' un costruttore generale, che consente la personalizzazione della politica di gestione dei pool con diversi parametri come:<br></p>
+<p>- CorePoolSize: numero minimo di thread nel pool<br></p>
+<p>- MaximumPoolSize: numero massimo di thread nel pool<br></p>
+<p>- keepAliveTime: tempo di inattività prima di terminare un thread<br></p>
+<p>- workqueue: BlockingQueue che memorizza gli eventuali task in attesa di esecuzione</p>
+</details>
+<details><summary>Core di un thread pool</summary>
+<p>Il nucleo minimo di thread attivi nel pool.<br></p>
+<p>I thread del core possono essere attivati tutti al momento della creazione del pool, o al momento della sottomissione di un nuovo task.<br></p>
+<p>L'obbiettivo è di riempire il pool il prima possibile. Raggiunto questo obbiettivo, la politica cambia.</p>
+</details>
+<details><summary>Keep alive time</summary>
+<p>Un timeout T che riguarda i threads non appartenenti al core, a meno che non si abbia invocato allowCoreThreadTimeOut().<br></p>
+<p>Quando un thread è inattivo e nessun task viene sottomesso entro T, il thread termina la sua esecuzione.<br></p>
+<p>La dimensione del pool non scende mai sotto Core Pool size.</p>
+</details>
+<details><summary>Funzionamento di ThreadPoolExecutor</summary>
+<p>Se i thread del core sono già stati creati e viene sottomesso un nuovo task, viene aggiunto alla coda.<br></p>
+<p>Se la coda è piena, viene attivato un nuovo thread, fino a raggiungere la MaxPoolSize.<br></p>
+<p>Se la coda è piena e si è raggiunto il numero massimo di threads, il task viene respinto.</p>
+</details>
+<details><summary>Quali tipi di code sono utilizzate dai diversi tipi di threadPool?</summary>
+<p>La FixedThreadPool usa una LinkedBlockingQueue. Siccome il numero di threads è limitato, si possono tenere infinite task. Siccome la coda non può riempirsi mai, non si creano mai threads nuovi.<br></p>
+<p>La CachedThreadPool usa una coda sincrona Synchronous Queue. Non c'è necessità di trattenere le task, che vengono immediatamente date al thread.<br></p>
+<p>Una ThreadPool personalizzata con ThreadPoolExecutor usa una ArrayBlockingQueue, che ha una dimensione fissata.</p>
+</details>
+<details><summary>Altri tipi di thread Pool</summary>
+<p>Single Threaded Executor: serve ad assicurarsi che le task siano eseguite sequenzialmente.<br></p>
+<p>Scheduled Thread Pool: serve a distanziare le task con un certo delay.</p>
+</details>
+<details><summary>Come gestire i rifiuti di task nel ThreadPool?</summary>
+<p>Si può scegliere una rejection policy. Quella di default è di lanciare una RejectedExecutionException.<br></p>
+<p>Esistono anche la DiscardPolicy, DiscardOldestPolicy, CallerRunsPolicy.<br></p>
+<p>Si può definire un custom rejection handler che implementa l'interfaccia RejectExecutionHandler e il metodo rejectedExecution.</p>
+</details>
+<details><summary>Executor service</summary>
+<p>Interfaccia che definisce servizi generici di esecuzione. Diversi servizi implementano il generico ExecutorService, come ThreadPoolExecutor e ScheduledThreadPool executor.</p>
+<p>La classe Executors opera come una factory in grado di generare oggetti di tipo ExecutorService con comportamenti predefiniti.</p>
+<p>I task devono essere incapsulati in oggetti di tipo runnable e passati a questi esecutori mediante invocazione del metodo execute.</p>
+</details>
+<details><summary>Executor: Terminazione</summary>
+<p>Graduale: non iniziare nuovi task<br></p>
+<p>Istantanea: termina tutti i thread.<br></p>
+<p>Nel primo caso si può usare il metodo shutdown(). Nessun task viene accettato quando è stata invocata, ma quelli in esecuzione e in coda vengono eseguiti.<br></p>
+<p>Il metodo shutdownNow() non accetta ulteriori task ed elimina i task in coda, restituendoli.<br></p>
+<p>Tenta di terminare l'esecuzione dei thread che stanno eseguendo i task, inviando un'interruzione.<br></p>
+<p>Non garantisce la terminazione immediata, e se un thread non risponde all'interruzione non termina.</p>
+</details>
+<details><summary>Determinare la dimensione del thread pool</summary>
+<p>Dato il numero di core della macchina, il numero di threads dipende dal tipo di task da eseguire.<br></p>
+<p>Alcune task sono limitate dalla CPU, perchè devono eseguire calcoli complessi, ad esempio l'inversione parziale di un hash. In questo caso, la dimensione ottimale del pool sarebbe il numero di cores della CPU.<br></p>
+<p>Altre sono limitate dalle operazioni di Input Output, come accesso a database e alla rete.<br></p>
+<p>Queste sono spesso bloccate in attesa del completamento delle operazioni da parte del SO, quindi un numero di thread maggiore di quello di cores può aumentare le performance.</p>
+</details>
+<details><summary>SchedulerExecutorService</summary>
+<p>Questa interfaccia dà la possibilità di schedulare un task dopo un certo periodo di tempo(delay) e/o periodicamente.<br></p>
+<p>La funzione schedule(Runnable command, long delay, TimeUnit unit), esegue un task dopo un certo intervallo di tempo.<br></p>
+<p>La funzione ScheduleAtFixedRate, che prende un initialDelay e un delay esegue un task dopo un intervallo iniziale, e poi lo ripete periodicamente. Se il tempo di esecuzione del task è maggiore del periodo specificato, le sue seguenti esecuzioni possono essere ritardate.<br></p>
+<p>scheduleWithFixedDelay ripete il task periodicamente con un intervallo dato tra la terminazione di una esecuzione e l'inizio della successiva.</p>
+</details>
+<h2>Thread safety</h2>
+<details><summary>Condividere risorse tra threads</summary>
+<p>In programmi multi-threaded, è spesso necessario che più thread accedano concorrentemente allo stessi file, alla stessa parte di un database o ad una struttura di memoria.
+L'accesso non controllato delle risorse condivise può provocare situazioni di errore e inconsistenze.</p>
+</details>
+<details><summary>Cosa è una sezione critica?</summary>
+<p>E' un blocco di codice in cui si effettua l'accesso ad una risorsa condivisa e che deve essere eseguito da un thread per volta.</p>
+</details>
+<details><summary>Classi thread safe</summary>
+<p>Il codice dei metodi di una classe thread safe può essere utilizzato/condiviso in un ambiente concorrente senza provocare inconsistenze o comportamenti inaspettati.</p>
+</details>
+<details><summary>Come definire classi thread safe?</summary>
+<p>Si possono usare le classi thread safe predefinite, implementare concurrent-aware interfaces, e usare concurrent-aware classes. Oppure usare i monitor.</p>
+</details>
+<details><summary>In che modo una BlockingQueue è diversa da una queue?</summary>
+<p>E' pensata per essere utilizzata in ambiente multithreaded, e permette una sincronizzazione dei thread.</p>
+</details>
+<details><summary>Due tipi di blockingQueue</summary>
+<p>ArrayBlockingQueue ha dimensione limitata, definita in fase di inizializzazione, e memorizza gli elementi in un array. Ha una sola lock per tutta la struttura, non sono possibili inserzioni e rimozioni in parallelo.<br></p>
+<p>La LinkedBlockingQueue può essere limitata o illimitata, mantiene gli elementi in una linkedlist. Ha una maggiore occupazione di memoria, e crea un nuovo oggetto per ogni inserzione.<br></p>
+<p>Permette inserzioni ed estrazioni concorrenti, ha lock separate per lettura e scrittura.</p>
+</details>
+<details><summary>Quali sono i metodi offerti dalle BlockingQueue?</summary>
+<p>Ci sono metodi per inserire, rimuovere o esaminare un elemento. Reagiscono in modo diverso se l'operazione non può essere svolta.<br></p>
+<p>Per inserire: add(), che lancia eccezione, offer(), che restituisce un valore speciale, put(), che blocca, offer(o, timeout, timeunit), che ha un timeout.<br></p>
+<p>Per rimuovere: remove(), che lancia eccezione, poll(), che restituisce un valore speciale, take() che blocca, poll(timeout, timeunit) che ha un timeout.<br></p>
+<p>Examine ha element() che lancia eccezione, e peek() che restituisce un valore speciale.</p>
+</details>
+<h2>Produttore consumatore, callables</h2>
+<details><summary>Il problema produttore consumatore</summary>
+<p>Il produttore P produce un nuovo valore, lo inserisce nel buffer e torna a produrre valori.<br></p>
+<p>Il consumatore C consuma il valore(lo rimuove dal buffer) e torna e richiedere valori.<br></p>
+<p>Bisogna garantire che il produttore non aggiunga valori se la coda è piena, e si metta in attesa, e garantire che C non provi a togliere un dato dalla coda vuota.<br></p>
+<p>Bisogna implementare i vincoli di sincronizzazione.<br></p>
+<p>In Java l'interazione esplicita tra threads avviene mediante l'utilizzo di oggetti condivisi, ad esempio la coda.</p>
+</details>
+<details><summary>Qual è la differenza tra un oggetto di tipo Runnable e un oggetto di tipo Callable?</summary>
+<p>Un oggetto di tipo Runnable incapsula una attività che viene eseguita in modo asincrono. Il metodo run è un metodo asincrono, che non prende parametri e non restituisce un valore di ritorno.<br></p>
+<p>L'interfaccia Callable permette di definire un task che può restituire un risultato in modo asincrono, e sollevare eccezioni.</p>
+</details>
+<details><summary>Come si può accedere al risultato di un Callable?</summary>
+<p>Utilizzando la Future interface, che contiene metodi per reperire, in modo asincrono, il risultato di una computazione asincrona.<br></p>
+<p>Permette di:<br></p>
+<ul>
+<li>controllare se la computazione è terminata</li>
+<li>attendere la terminazione di una computazione</li>
+<li>cancellare una computazione.</li>
+</ul>
+</details>
+<details><summary>Descrivere l'interfaccia Callable</summary>
+<p>E' un'interfaccia che contiene il metodo Call(), analogo al metodo run(), ma che può restituire un valore e sollevare eccezioni. Tutto il codice viene eseguito nel metodo call.<br></p>
+<p>Un callable ha un parametro di tipo <V> che indica il tipo restituito dal metodo call.<br></p>
+<p>Quando lo si invoca da un executor bisogna usare la funzione submit.</p>
+</details>
+<details><summary>Cosa è il metodo get() dell'interfaccia Future?</summary>
+<p>E' un metodo che si blocca fino a che il thread non ha prodotto il valore richiesto e restituisce il valore calcolato.<br></p>
+<p>Il metodo get(Timeout, TimeUnit) attende solo per una certa quantità di tempo, e se non ottiene il risultato lancia una TimeoutException.<br></p>
+<p>E' possibile cancellare il task e verificare la computazione è stata cancellata o è terminata.</p>
+</details>
+<h2>Java monitor</h2>
+<details><summary>In cosa consistono delle lock implicite</summary>
+<p>Sono delle lock interne intrinseche che ogni oggetto ha.<br></p>
+<p>Un metodo synchronized acquisisce implicitamente la lock sull'oggetto su cui viene chiamato.<br></p>
+<p>Se l'oggetto è bloccato il thread viene sospeso nella coda associata all'oggetto finchè il thread che detiene la lock la rilascia.</p>
+</details>
+<details><summary>Java Built-in Monitor</summary>
+<p>E' un meccanismo di sincronizzazione ad alto livello per la thread safety. E' una classe che gestisce la sincronizzazione di un oggetto.</p>
+<p>Ogni oggetto che è istanza di una classe (quindi non int o long) ha una lock intrinseca, ed una waiting queue per il suo utilizzo, la cui gestione è automatica da parte della JVM.</p>
+</details>
+<details><summary>Quanti metodi sincronizzati vengono eseguiti su una sola classe?</summary>
+<p>Un metodo sincronizzato alla volta sulla stessa istanza di una classe.</p>
+</details>
+<details><summary>Come funzionano wait, notify e notifyAll()?</summary>
+<p>Sono invocati su un oggetto, appartengono alla classe Object.<br></p>
+<p>Occorre eseguire la lock intrinseca prima di chiamarli, altrimenti si solleva la IllegalMonitorException.<br></p>
+<p>Se non si mette il riferimento esplicito ad un oggetto, il riferimento esplicito è this.</p>
+</details>
+<details><summary>Come funziona wait()?</summary>
+<p>Sospende il thread fino a che un altro thread invoca notify o notifyall sull'oggetto.<br></p>
+<p>Implementa una attesa passiva del verificarsi una condizione, rilascia la lock sull'oggetto.</p>
+</details>
+<details><summary>Come funziona notify?</summary>
+<p>Rilascia la lock e risveglia uno dei metodi in attesa sull'oggetto.</p>
+</details>
+<details><summary>Come funziona notifyAll?</summary>
+<p>Rilascia la lock e risveglia tutti i thread in attesa sull'oggetto, che competono per riacquisire la lock.</p>
+</details>
+<h2>JAVA IO</h2>
+<details><summary>Cosa è Java IO?</summary>
+<p>E' una libreria che offre un insieme di astrazioni per gestire diversi tipi di dispositivi I/O.<br></p>
+<p>Una delle astrazioni che fornisce è il concetto di stream, che permette di rappresentare un flusso di dati, ad esempio quello di una connessione TCP.<br></p>
+<p>Altre astrazioni per l'I/O sono i File e i Channels(NIO).</p>
+</details>
+<details><summary>Socket</summary>
+<p>Un socket è un endpoint da cui inviare e ricevere dati che astrae dalla complessità della rete.</p>
+</details>
+<details><summary>Stream</summary>
+<p>Uno stream è un flusso di dati di lunghezza illimitata che va dal programma Java ad un buffer, o un file, o alla rete. L'applicazione inserisce dati e/o li legge da un capo dello stream e i dati fluiscono da/verso la destinazione.</p>
+</details>
+<details><summary>Caratteristiche generali degli streams</summary>
+<ul>
+<li>Accesso sequenziale</li>
+<li>Mantengono l'orientamento FIFO</li>
+<li>Sono unidirezionali</li>
+<li>Sono bloccanti, quando un'applicazione legge un dato da uno stream si blocca finchè l'operazione non è completata.</li>
+<li>Non necessitano che la quantità scritta da un lato sia uguale a quella letta dall'altro.</li>
+</ul>
+</details>
+<details><summary>Obbiettivi di Java.io</summary>
+<p>Fornire un'astrazione che incapsuli tutti i dettagli del dispositivo sorgente/destinazione dei dati.<br></p>
+<p>Dare un modo semplice e flessibili per aggiungere funzionalità a quelle fornite dallo "stream base".<br></p>
+<p>Alcuni stream di base per connettersi a file, connessioni di rete, console… altri stream aggiungono altre funzionalità.</p>
+</details>
+<details><summary>Due tipi di streams in Java trasmettono tipi di dati diversi</summary>
+<p>I ""character"" streams come reader/writer trasmettono char.<br></p>
+<p>I ""byte"" streams trasmettono oggetti di tipo byte, come InputStream e OutputStream.</p>
+</details>
+<h2>Classi filter</h2>
+<details><summary>Classi filter</summary>
+<p>Compiono trasformazioni su dati a basso livello, come crittografia, compressione, buffering, traduzione dei dati in un formato a più alto livello.<br></p>
+<p>Alcuni filter sono i Readers e Writers, che permettono di decodificare bytes in caratteri. I filtri possono essere organizzati in catena.</p>
+</details>
+<details><summary>BufferedInputStream</summary>
+<p>Scrive e legge i dati in blocchi di bytes, migliorando la performance.</p>
+</details>
+<details><summary>Caratteristiche di InputStream</summary>
+<p>Il costruttore apre lo stream. read() legge uno o più byte, close() chiude lo stream.<br></p>
+<p>InputStream è una classe astratta, e il metodo read() dovrà essere definito dalle classi derivate in modo specifico per ogni sorgente dati.</p>
+</details>
+<details><summary>FileInputStream</summary>
+<p>Permette di leggere uno o più byte dal file. Restituisce il byte letto come un intero da 0 a 255, -1 se il file è terminato.<br></p>
+<p>Se non ci sono byte, ma lo stream non è finito, rimane in attesa.</p>
+</details>
+<details><summary>FileOutputStream</summary>
+<p>Rappresenta il concetto di dispositivo in uscita. Si può passare al costruttore il nome del file o un oggetto File costruito in precedenza. Per scrivere il file si usa un metodo write() che permette di scrivere uno o più byte.</p>
+</details>
+<details><summary>BufferedInputStream e BufferedOutputStream</summary>
+<p>Sottoclassi di FilteredInputStream e FilteredOutputStream che scrivono in blocchi di byte anzichè in un unico blocco, migliorando la performance.</p>
+</details>
+<details><summary>DataInputStream e DataOuputStream</summary>
+<p>Sottoclassi del FilteredStream che permettono di dare un formato ai dati presenti sullo stream.</p>
+</details>
+<h2>Monitor 2</h2>
+<details><summary>Monitor: Perchè si testa la condizione di una wait all'interno di un ciclo?</summary>
+<p>La coda di attesa è unica per tutte le condizioni, per cui un thread potrebbe essere risvegliato per il verificarsi di una condizione che poi diventa nuovamente falsa.</p>
+</details>
+<details><summary>Quali sono vantaggi e svantaggi di monitor rispetto a lock esplicite?</summary>
+<p>Nel caso dei monitor, l'unità di sincronizzazione è il metodo: tutte le sincronizzazioni sono visibili esaminando la struttura dei metodi. Il livello di astrazione è più alto e ci sono meno rischi di avere deadlock o starvation. D'altra parte, la sincronizzazione è a grano grosso, e diminuisce il livello di concorrenza.<br></p>
+<p>Le lock esplicite hanno i vantaggi di essere specifiche, e hanno una maggiore flessibilità. Possono anche prevedere molti lettori e un singolo scrittore.<br></p>
+<p>Tuttavia possono rendere il codice poco leggibile.</p>
+</details>
+<h2>Collections</h2>
+<details><summary>Quali sono i metodi dati da Collections?</summary>
+<ul>
+<li>ordinamento</li>
+<li>calcolo massimo e minimo</li>
+<li>rovesciamento, permutazione</li>
+<li>confronto tra collezioni</li>
+<li>aggiungere un wrapper di sincronizzazione alla collezione</li>
+</ul>
+</details>
+<details><summary>Perchè ArrayList non è una classe thread-safe?</summary>
+<p>Perchè add non è un'operazione atomica:<br></p>
+<ul>
+<li>determina quanti elementi ci sono nella lista</li>
+<li>trova il punto esatto di inserimento</li>
+<li>incrementa il numero di elementi nella lista</li>
+</ul>
+<div>Quindi se si eseguono due add lo stato della scrittura può non essere consistente.</div>
+</details>
+<details><summary>Synchronized collections</summary>
+<p>I wrappers incapsulano una collection in un oggetto sincronizzato. Ogni metodo viene incapsulato in un blocco sincronizzato. Una collection non thread-safe diventa thread-safe. Utilizzano un'unica lock per tutta la collezione, gestita dalla JVM.</p>
+</details>
+<details><summary>Le classi conditionally thread safe</summary>
+<p>Sono classi che sono state incapsulate in un synchronized wrapper. La thread-safety garantisce che le operazioni singole siano atomiche, ma le funzioni che coinvolgono più di una operazione possono non essere thread-safe.</p>
+</details>
+<details><summary>Concurrent collections: perchè sono migliori delle synchronized?</summary>
+<p>Utilizzano un fine-grain locking.<br></p>
+<p>Provvedono iteratori fail safe, o weakly consistent, che restituiscono tutti gli elementi che erano nella connessione quando l'operatore è stato creato.<br></p>
+<p>Forniscono alcune operazioni atomiche composte da più operazioni elementari, come put-if-absent</p>
+</details>
+<h2>Reti</h2>
+<details><summary>Quali socket si usano per una connessione TCP, e quali per una connessione UDP?</summary>
+<p>Gli stream socket si usano per la connessione TCP, e i DatagramSocket per la connessione UDP.</p>
+</details>
+<details><summary>IP address</summary>
+<p>2^23 indirizzi in ""dotted quad form"", cioè 32 bit in cui ogni byte è interpretato come un numero senza segno, da 0 a 255.<br></p>
+<p>Alcuni indirizzi sono riservati, come il loopback address 127.0.0.0, e broadcast 255.255.255.255<br></p>
+<p>IPV6 ha 2^128 indirizzi, cioè 8 blocchi di 4 cifre esadecimali.</p>
+</details>
+<details><summary>InetAddress</summary>
+<p>Incapsula l'indirizzo IP numerico e il nome di dominio di quell'indirizzo in un oggetto.<br></p>
+<p>E' creato da una factory con metodi statici.<br></p>
+<p>I metodi si connettono al DNS per risolvere un hostname, quindi è necessaria una connessione di rete.</p>
+</details>
+<details><summary>InetAddress: Caching</summary>
+<p>L'accesso al DNS è un'operazione potenzialmente molto costosa, quindi si effettua il caching di ogni richiesta, anche di quelle non andate a buon fine.</p>
+</details>
+<details><summary>Metodi che contattano il DNS per la risoluzione di indirizzo/hostname</summary>
+<p>getLocalHost(), getByName(string hostname), getAllByName(String hostname), getLoopBackAddress()<br></p>
+<p>Cosa è un loopback address? Indirizzo usato per motivi di testing.</p>
+</details>
+<details><summary>Spam checker</summary>
+<p>Servizi che monitorano gli spammers: RTBL, real-time black-hole lists.<br></p>
+<p>Mantengono una lista di indirizzi IP che risultano, probabilmente, degli spammers.</p>
+</details>
+<details><summary>Paradigma client/server</summary>
+<p>Il client è un software che sfrutta i servizi forniti dal server. Il server è l'istanza di un particolare servizio in esecuzione su un host.<br></p>
+<p>Un servizio è un software in esecuzione su una o più macchine, che fornisce l'astrazione di un insieme di operazioni.</p>
+</details>
+<details><summary>Per identificare un servizio bisogna specificare…</summary>
+<p>L'host, tramite indirizzo IP, che indica la rete a cui appartiene e l'host all'interno della rete.<br></p>
+<p>La porta, che individua un servizio i tanti servizi attivi in un host.</p>
+</details>
+<h2>Porte e socket</h2>
+<details><summary>Porta per TCP e UDP</summary>
+<p>Una porta individua un servizio. Non è un dispositivo fisico, ma un'astrazione per individuare i singoli processi. Le porte 1-1023 sono riservate per well-known services.</p>
+</details>
+<details><summary>java.net.Socket</summary>
+<p>Codice nativo per comunicare con lo stack TCP locale. Crea un socket su una porta effimera e tenta di stabilire, tramite esso, una connessione con l'host individuato da InetAddress. Se non ci riesce lancia un'eccezione.</p>
+</details>
+<details><summary>shutdownOutput()</summary>
+<p>Metodo che si può usare su un socket per impedirgli di inviare messaggi al server.</p>
+</details>
+<h2>JAVA NIO</h2>
+<details><summary>Come funzionano i Channels di JAVA NIO?</summary>
+<p>I dati sono trasferiti sul dispositivo mediante un canale e vengono scritti/letti in un buffer. I canali sono bidirezionali e possono essere non bloccanti. Il buffer è un'interfaccia tra il programma e il canale.</p>
+</details>
+<details><summary>Cosa vuol dire che i channels sono non bloccanti?</summary>
+<p>Vuol dire che lo stesso channel può leggere e scrivere sul dispositivo.</p>
+</details>
+<details><summary>Vantaggi di Java New IO</summary>
+<p>Le primitive sono ""più vicine"" al livello del sistema operativo, aumenta la performance. Le prestazioni sono migliori.</p>
+</details>
+<details><summary>Svantaggi di Java New Io</summary>
+<p>Si perde semplicità ed eleganza rispetto allo stream based IO, e le performance dipendono dalla piattaforma su cui si eseguono le applicazioni.</p>
+</details>
+<h2>Buffer NIO</h2>
+<details><summary>Buffer NIO</summary>
+<p>Contengono dati appena letti o da scrivere sul canale.<br></p>
+<p>Si usano array e puntatori per tenere traccia di read e write fatte dal programma e dal sistema operativo sul buffer. Non sono thread-safe quindi non vanno condivisi.</p>
+</details>
+<details><summary>Variabili di stato di un buffer</summary>
+<p>Capacity: numero massimo di elementi<br></p>
+<p>Limit: porzione del buffer che può essere letta/scritta.<br></p>
+<p>Position: posizione in cui bisogna scrivere o da cui bisogna leggere.<br></p>
+<p>Mark: memorizza il puntatore alla posizione corrente.<br></p>
+<p>Vale sempre <code>0 &lt;= Mark &lt;= position &lt;= limit &lt;= capacity.</code></p>
+</details>
+<details><summary>Cosa fa il flipping di un buffer?</summary>
+<p>Predispone il buffer alla lettura dopo la scrittura: sposta la posizione all'inizio del buffer, e il limite dove finiscono i dati scritti.</p>
+</details>
+<details><summary>Mark su buffer</summary>
+<p>Ricorda la position corrente, per poi eventualmente riportare il puntatore a questa posizione.</p>
+</details>
+<details><summary>Reset di un buffer</summary>
+<p>Resetta position alla posizione memorizzata in mark</p>
+</details>
+<details><summary>Clear</summary>
+<p>Permette di tornare in modalità scrittura, resetta i contatori senza eliminare i dati dal buffer.</p>
+</details>
+<details><summary>Rewind di un buffer</summary>
+<p>Riporta position a 0, ma lascia il limit invariato, per rileggere dati già letti.</p>
+</details>
+<details><summary>Compact di un buffer</summary>
+<p>I dati non ancora letti sono copiati all'inizio di un buffer.</p>
+</details>
+<details><summary>Remaining() di un buffer</summary>
+<p>Il numero di elementi di un buffer compresi tra position e limit.</p>
+</details>
+<details><summary>Non direct buffer:</summary>
+<p>Crea sullo heap un oggetto Buffer, per cui c'è una doppia copia dei dati, uno del kernel e uno sullo heap della JVM</p>
+</details>
+<details><summary>Direct buffer</summary>
+<p>Trasferisce i dati dal programma al sistema operativo, mediante accesso diretto alla kernel memory da parte della JVM.<br></p>
+<p>Bytebuffer buffer = ByteBuffer.allocateDirect(1024);</p>
+</details>
+<h2>JAVA NIO</h2>
+<details><summary>Quali sono gli obbiettivi di Java NIO?</summary>
+<ul>
+<li>Migliorare la performance per quanto riguarda i buffer, l'I/O con i file, e le espressioni regolari</li>
+<li>Modalità non bloccante</li>
+<li>Multiplexing</li>
+<li>Quindi permettere di scalare a migliaia di connessioni</li>
+</ul>
+</details>
+<details><summary>Blocking server socket channel</summary>
+<p>Come ServerSocket, ma con interfaccia buffer-based</p>
+</details>
+<details><summary>Non blocking Server Socket Channel</summary>
+<p>Permette il multiplexing di canali</p>
+</details>
+<h2>UDP</h2>
+<details><summary>Quali servizi offre UDP?</summary>
+<p>Aggiunge un livello di indirizzamento al livello di porte, rispetto all'IP<br></p>
+<p>Offre un servizio di scarto dei pacchetti corrotti.</p>
+</details>
+<details><summary>Quanto dovrebbe essere grande un datagramma UDP?</summary>
+<p>In molte piattaforme la dimensione massima è 8192 bytes.</p>
+</details>
+<details><summary>In UDP, send e receive sono bloccanti?</summary>
+<p>Send è non bloccante, perchè il processo non attende che il destinatario abbia ricevuto il pacchetto.<br></p>
+<p>Receive è bloccante perchè il processo si blocca finchè non ha ricevuto un pacchetto.</p>
+</details>
+<details><summary>Come inviare oggetti con UDP?</summary>
+<p>Usare la serializzazione per generare uno stream di Byte.<br></p>
+<p>Collegare l'outputStream generato ad un ByteArrayOutputStream.</p>
+</details>
+<details><summary>Byte Array Output Stream</summary>
+<p>E' un filtro che genera streams di bytes a partire da dati strutturati/ad alto livello.<br></p>
+<ul>
+<li>gli oggetti di questa classe rappresentano stream di bytes</li>
+<li>ogni dato scritto sullo stream viene riportato in un buffer di memoria a dimensione variabile.</li>
+<li>Quando il buffer si riempie la sua dimensione viene raddoppiata automaticamente.</li>
+<li>E' possibile concatenarlo ad un altro filtro</li>
+<li>I dati presenti nel buffer possono essere copiati in un array di bytes</li>
+</ul>
+</details>
+<h2>Serializzazione</h2>
+<details><summary>Cosa è la serializzazione di un oggetto? A cosa serve?</summary>
+<p>La serializzazione è la rappresentazione dello stato di un oggetto per scriverlo su uno stream di output. E' necessaria perchè gli oggetti esistono in memoria solo finchè la JVM è in esecuzione.</p>
+</details>
+<details><summary>GSON streaming API</summary>
+<p>E' un'API a basso livello che legge e scrive JSON come una sequenza di token discreti. Le sue classi principali sono JsonReader e JsonWriter.<br></p>
+<p>La sua struttura base sono JsonToken che rappresenta una struttura, un nome o un valore all'interno di una stringa JSON.</p>
+</details>
+<details><summary>Interfaccia Serializable</summary>
+<p>Perchè un oggetto in Java sia serializzabile nativamente, deve implementare l'interfaccia Serializable. E' un'interfaccia ""marker"", cioè non ha nessun metodo ma rappresenta una informazione sull'oggetto per la JVM.<br></p>
+<p>Permette un controllo limitato sul meccanismo di linearizzazione dei dati.<br></p>
+<p>Tutti i tipi di dato primitivi sono serializzabili.</p>
+</details>
+<details><summary>Externizable Interface</summary>
+<p>Estende Serializable<br></p>
+<p>Consente di creare un proprio protocollo di serializzazione, per ottimizzare la rappresentazione di un oggetto.<br></p>
+<p>Bisogna implementare i metodi readExternal e writeExternal</p>
+</details>
+<details><summary>Regole per poter serializzare un oggetto:</summary>
+<ol>
+<li>Per serializzare un oggetto persistente, la classe a cui appartiene deve implementare l'interfaccia Serializable oppure ereditare l'implementazione dalla sua gerarchia di classi.</li>
+<li>Per rendere un oggetto persistente occorre marcare tutti i campi che non sono serializzabili come transient.</li>
+</ol>
+</details>
+<details><summary>Qual è la classe che gestisce la serializzazione vera e propria?</summary>
+<p>E' ObjectOutputStream. Lo stream dev'essere concatenato con uno stream di bytes.</p>
+</details>
+<details><summary>Deserializzazione: readObject()</summary>
+<p>Il metodo readObject legge la sequenza di bytes memorizzati in precedenza, e crea un oggetto che è l'esatta replica di quello originale. Può leggere qualsiasi tipo di oggetto ma è necessario effettuare un cast al tipo corretto.<br></p>
+<p>La JVM determina, mediante informazione memorizzata nell'oggetto serializzato, il tipo della classe dell'oggetto e tenta di caricare quella classe o una classe compatibile. Se non la trova solleva ClassNotFoundException.</p>
+</details>
+<details><summary>Deserializzazione</summary>
+<p>Quando la JVM trova la classe dell'oggetto da deserializzare, viene creato un nuovo oggetto sullo heap.<br></p>
+<p>Lo stato degli oggetto serializzati viene ricostruito cercando i valori nello stream, senza invocare il costruttore (Reflection).<br></p>
+<p>Si ripercorre l'albero delle superclassi fino alla prima superclasse non serializzabile. Per quella viene invocato il costruttore.</p>
+</details>
+<details><summary>Cosa non è serializzabile?</summary>
+<ul>
+<li>Oggetti contenenti riferimenti specifici alla JVM o al SO (Java native class).</li>
+<li>Variabili marcate come transient (ad esempio che non devono essere scritte per motivi di privacy)</li>
+<li>Variabili statiche: associate alla classe e non all'istanza specifica. Lette dalla classe in fase di deserializzazione.</li>
+</ul>
+</details>
+<details><summary>Cosa succede se un oggetto contiene componenti non serializzabili?</summary>
+<p>Se non sono transient, si solleva una notSerializableException.</p>
+</details>
+<h2>Sincronizzazione e visibilità</h2>
+<details><summary>A cosa serve il modificatore volatile?</summary>
+<p>Riguarda la ""visibilità"" della modifica. L'aggiornamento ad una variabile volatile è sempre effettuato nella main memory, non solo nella cache di un thread.</p>
+</details>
+<details><summary>Cosa succede alla cache quando si accede (legge o scrive) ad una variabile volatile?</summary>
+<p>Il thread esegue un flush: tutte le variabili del thread che sta eseguendo una modifica vengono anche sincronizzate sulla memoria condivisa.</p>
+</details>
+<details><summary>Sincronizzazione: visibilità</summary>
+<p>I blocchi e metodi sincronizzati forniscono una garanzia di visibilità simile a quella offerta dal modificatore volatile.<br></p>
+<p>Quando un thread entra in un metodo o blocco sincronizzato, viene effettuato un refresh di tutte le variabili visibili dal thread.<br></p>
+<p>Il monitor garantisce sia sincronizzazione che visibilità.</p>
+</details>
+<details><summary>Quando usare volatile e quando la sincronizzazione?</summary>
+<ul>
+<li>Quando la variabile condivisa è di tipo semplice.</li>
+<li>Per acquisire la lock occorrerebbe fare il cast al corrispondente oggetto.</li>
+<li>Il tipico pattern per terminare l'esecuzione di un thread.</li>
+</ul>
+</details>
+<details><summary>Qual è l'utilità delle variabili atomic?</summary>
+<p>L'aggiornamento di una variabile non è atomico. Se più thread provano ad incrementare una variabile in modo concorrente, un aggiornamento può andare perduto.<br></p>
+<p>Dichiarare una variabile atomic permette di effettuare operazioni atomiche senza sincronizzazioni esplicite o lock, perchè la JVM garantisce l'atomicità.<br></p>
+</details>
+<h2>Iteratori</h2>
+<details><summary>Tre tipi di iteratore:</summary>
+<ul>
+<li><p><strong>fail-fast</strong> : se c'è una modifica strutturale dopo la creazione dell'iteratore, la rileva e solleva una ConcurrentModificationException.</p></li>
+<li><p><strong>fail-safe&nbsp;</strong>o ""snapshot"": creano una copia della collezione, al momento della creazione dell'iteratore lavorano su questa copia. Non sollevano ConcurrentModificationException. (es. CopyOnWriteArrayList)<br></p></li>
+<li><p><strong>weakly consistent</strong>: L'iteratore e le modifiche operano sulla stessa copia, l'iteratore può riflettere le modifiche che sono avvenute dopo la sua costruzione, ma non è garantito. (es. ConcurrentHashMap)</p></li>
+</ul>
+</details>
+<h2>Client-server VS P2P</h2>
+<details><summary>Paradigma client server: riassunto.</summary>
+<p>Il client:<br></p>
+<ul>
+<li>in esecuzione sugli end host</li>
+<li>comportamento on/off</li>
+<li>utilizza servizi</li>
+<li>inoltra richieste</li>
+<li>nessuna interazione fra client</li>
+<li>deve conoscere un riferimento al servizio</li>
+</ul>
+<div>Il server:</div>
+<div><ul><li>in esecuzione su host dedicato.</li><li>""always on""</li><li>fornisce servizi</li><li>riceve richieste dai client</li><li>soddisfa le richieste dell'utente</li><li>deve avere un IP fisso.</li></ul></div>
+</details>
+<details><summary>Paradigma Peer to Peer:</summary>
+<p>Peer:<br></p>
+<ul>
+<li>in esecuzione sugli end host</li>
+<li>produttori e consumatori di servizi</li>
+<li>comportamento on/off</li>
+<li>alto livello di dinamicità (churn)</li>
+<li>necessaria fase di bootstrap</li>
+<li>necessari meccanismi per la scoperta di peer</li>
+<li>comunicano tra di loro</li>
+<li>necessari protocolli a livello applicazione per evitare free riders ed incentivare la partecipazione.</li>
+</ul>
+</details>
+<details><summary>Blockchain in breve:</summary>
+<p>Un database distribuito e replicato sui nodi di un sistema Peer to Peer<br></p>
+<ul>
+<li>un insieme di blocchi collegati mediante puntatori hash</li>
+<li>in ogni blocco è presente l'hash del blocco precedente</li>
+<li>ogni peer possiede una copia consistente dell'intero database</li>
+</ul>
+<div>Operazioni:</div>
+<div><ul><li>append only, aggiungere registrazioni organizzate in blocchi.</li><li>leggere il contenuto di una registrazione.</li></ul></div>
+</details>
+<details><summary>P2P file systems: IPFS</summary>
+<p>IPFS: integrazione file system distribuito con blockchain.<br></p>
+<p>Il file riceve una fingerprint, che viene utilizzata per cercarla all'interno del database.<br></p>
+<p>Dati di grandi dimensioni memorizzati su IPFS, hash dei dati su blockchain.<br></p>
+<p>Implementato in LibP2P.</p>
+</details>
+ </body>
+</html>
