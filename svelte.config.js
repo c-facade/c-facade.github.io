@@ -15,9 +15,10 @@ const config = {
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
-			fallback: '+error.svelte',
+			fallback: undefined,
 			precompress: false,
-			strict: true
+			strict: true,
+			trailingSlash: 'always'
 		}
 		)
 	},
