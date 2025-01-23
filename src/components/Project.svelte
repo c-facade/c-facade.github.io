@@ -3,7 +3,7 @@
 	export let title : string = "Project title";
 	export let description : string = "Description";
 	export let linkTitle : string = "linktitle"
-	export let link : string = "_blank";
+	export let link : string = "#";
 	export let image : string = "rick.gif"
 	export let imageAlt : string = "cool image or gif"
 	export let repo : string = "Anki2Notes"
