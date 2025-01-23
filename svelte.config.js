@@ -19,8 +19,7 @@ const config = {
 			precompress: false,
 			strict: true,
 			trailingSlash: 'always'
-		}
-		)
+		})
 	},
 };
 

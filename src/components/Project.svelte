@@ -23,7 +23,7 @@
 <div>
 	<h2>{title}</h2>
 	<span class="last-update">Last updated: {lastUpdate.toDateString()}</span>
-	<figure><img src={image} width=300px alt={imageAlt}/>
+	<figure><img src={image} width=200px alt={imageAlt}/>
 	</figure>
 	<p>{description}. <slot></slot></p>
 	See more: <a href={link}>{linkTitle} repository</a>.
