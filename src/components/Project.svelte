@@ -38,8 +38,8 @@
 
 <div class="project">
 	<h2>{title}</h2>
-	<span class="last-update">Last updated: {lastUpdate.toDateString()}</span>
-	<figure><img src="image/{image}" width=200px alt={imageAlt}/>
+	<p class="last-update">Last updated: {lastUpdate.toDateString()}</p>
+	<figure style="margin: 0px; align:right;"><img style="max-width: 100%;" src="image/{image}" alt={imageAlt}/>
 	</figure>
 	<p>{description}. <slot></slot></p>
 	See more: <a href={link}>{linkTitle} repository</a>.
