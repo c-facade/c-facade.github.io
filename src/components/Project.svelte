@@ -18,15 +18,14 @@
 			}
 			else{
 				data = await response.json();
-				console.log(data);
-				console.log(JSON.stringify(data));
+				console.debug(JSON.stringify(data));
 				localStorage.setItem(repo, JSON.stringify(data));
 			}
 		}
 		else{
 			var jsons = localStorage.getItem(repo);
 			if(jsons != null){
-				console.log(JSON.stringify(jsons));
+				console.debug(JSON.stringify(jsons));
 				data = JSON.parse(jsons);
 			}
 		}
