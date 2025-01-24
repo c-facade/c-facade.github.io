@@ -1,0 +1,94 @@
+:root {
+	--blue-grey-50: #ECEFF1;
+	--blue-grey-100: #CFD8DC;
+	--blue-grey-200: #B0BEC5;
+	--blue-grey-300: #90A4AE;
+	--blue-grey-400: #78909C;
+	--blue-grey-500: #607D8B;
+	--blue-grey-600: #546E7A;
+	--blue-grey-700: #455A64;
+	--blue-grey-800: #37474F;
+	--blue-grey-900: #263238;
+}
+
+/** FONTS **/
+@font-face {
+	font-family: Rajdani-normal;
+	src: url(/Rajdhani/Rajdhani-Regular.ttf) format("truetype");
+	font-style: normal;
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: Rajdani-bold;
+	src: url(/Rajdhani/Rajdhani-Bold.ttf) format("truetype");
+	font-style: normal;
+	font-weight: 700;
+}
+
+
+
+/* Light color theme */
+html {
+	background-color: white;
+	color: black;
+	margin: 0;
+}
+
+body {
+	font-family: Rajdani-normal;
+	margin:0;
+}
+
+.box {
+	background-color: var(--blue-grey-50);
+}
+
+
+/** Dark color theme ****/
+@media (prefers-color-scheme: dark) {
+	html{
+		background-color: black;
+		color: white;
+	}
+	
+	.box {
+		background-color: var(--blue-grey-900);
+	}
+
+	nav .menu {
+		color: var(--blue-grey-100);
+		font-size: larger;
+	}
+	.menu a {
+		color: var(--blue-grey-100);
+	}
+	.menu a:hover {
+		color: white;
+	}
+}
+
+/* BOTH */
+h1 {
+	text-align: center;
+	font-family: Rajdani-bold;
+}
+
+.rajdani{
+	font-family: Rajdani-normal;
+}
+
+.center {
+	text-align: center;
+}
+
+.project-container {
+	margin: 0;
+	padding: 1px 5px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.project {
+	padding: 5px;
+}
