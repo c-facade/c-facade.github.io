@@ -5,3 +5,5 @@
 </header>
 
 <slot></slot>
+
+<footer>This website uses SvelteKit.</footer>
