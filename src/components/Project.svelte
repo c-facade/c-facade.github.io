@@ -15,21 +15,25 @@
 		let data;
 		let valid = false;
 		if(repotime in localStorage){
+			console.debug("repotime already in localstorage");
 			let timestamp : number = Number(localStorage.getItem(repotime));
 			if(Date.now() - timestamp < 3600*1000){
 				//console.log("now - timestamp = ", Date.now()-timestamp);
 				valid = true;
+				let debug_timestamp = new Date(timestamp);
+				console.debug(debug_timestamp.toString());
 			}
 		}
 		if(!valid){	
 			// fetching
-			//console.log("Fetching again");
+			console.log("Fetching again");
 			const response = await fetch(endpoint);
 			if(!response.ok) {
 				throw new Error(`Response status: ${response.status ?? "error"}`);
 			}
 			else{
 				// no error, storing response
+				console.log("Storing data in localStorage");
 				data = await response.json();
 				console.debug(JSON.stringify(data));
 				localStorage.setItem(repo, JSON.stringify(data));
@@ -37,7 +41,7 @@
 			}
 		}
 		else{	
-			//console.log("valid: not fetching again");
+			console.log("valid: not fetching again");
 			// cache value is still valid
 			var jsons = localStorage.getItem(repo);
 			if(jsons != null){
@@ -51,35 +55,6 @@
 	onMount(async function () {
 		let data = await updateRepo();
 
-/*
-		if(!(repo in localStorage)){
-			// fetching for the first time
-			const response = await fetch(endpoint);
-			if(!response.ok) {
-				throw new Error(`Response status: ${response.status ?? "error"}`);
-			}
-			else{
-				// no error, storing response
-				data = await response.json();
-				console.debug(JSON.stringify(data));
-				localStorage.setItem(repo, JSON.stringify(data));
-				localStorage.setItem(repotime, Date.now().toString());
-			}
-		}
-		else{
-			let timestamp : number = Number(localStorage.getItem(repotime));
-			if(Date.now() - 100000 > timestamp){
-			}
-			else{
-				// cache value is still valid
-				var jsons = localStorage.getItem(repo);
-				if(jsons != null){
-					console.debug(JSON.stringify(jsons));
-					data = JSON.parse(jsons);
-				}
-			}
-		}
-		*/
 
 		link = data.html_url;
 		description = data.description;
