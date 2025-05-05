@@ -25,7 +25,7 @@
 			I'm also into computer archeology and retro-programming. I'm a guide at the <a href="https://www.msc.sma.unipi.it/">Museum of Computing Machinery</a> of Pisa.
 		</li>
 </ul>
-<figure>
+<figure style="text-align: center;">
 	<img style="max-width: 100%" src="image/mostra-hello-world.jpg" alt="mostra hello world illustration"/>
 	<figcaption>Hello World Exhibit</figcaption>
 </figure>
